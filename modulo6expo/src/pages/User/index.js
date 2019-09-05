@@ -33,6 +33,7 @@ export default class User extends Component {
     loading: false,
     // eslint-disable-next-line react/no-unused-state
     page: 1,
+    refreshing: false,
   };
 
   componentDidMount() {
@@ -44,7 +45,7 @@ export default class User extends Component {
       const { navigation } = this.props;
       const user = navigation.getParam('user');
 
-      const { page, stars, loading } = this.sloadRepositoriestate;
+      const { page, stars, loading } = this.state;
       if (loading) return;
       this.setState({ loading: true });
       const response = await api.get(`/users/${user.login}/starred`, {
@@ -56,10 +57,30 @@ export default class User extends Component {
         loading: false,
         // eslint-disable-next-line react/no-unused-state
         page: page + 1,
+        refreshing: false,
       });
     } catch (error) {
       ToastAndroid.show('Erro no carregamento dos repositórios favoritados :/');
       this.setState({ loading: false });
+    }
+  };
+
+  refreshList = async () => {
+    try {
+      const { navigation } = this.props;
+      const user = navigation.getParam('user');
+
+      const { loading } = this.state;
+      if (loading) return;
+      this.setState({ refreshing: true, page: 1, stars: [] });
+      const response = await api.get(`/users/${user.login}/starred`);
+      this.setState({
+        stars: response.data,
+        refreshing: false,
+      });
+    } catch (error) {
+      ToastAndroid.show('Erro no carregamento dos repositórios favoritados :/');
+      this.setState({ refreshing: false });
     }
   };
 
@@ -74,7 +95,7 @@ export default class User extends Component {
   };
 
   render() {
-    const { stars, loading } = this.state;
+    const { stars, loading, refreshing } = this.state;
     const { navigation } = this.props;
 
     const user = navigation.getParam('user');
@@ -86,9 +107,8 @@ export default class User extends Component {
           <Bio>{user.bio}</Bio>
         </Header>
         <Stars
-          ref={ref => {
-            this.flatListRef = ref;
-          }}
+          onRefresh={this.refreshList} // Função dispara quando o usuário arrasta a lista pra baixo
+          refreshing={refreshing}
           onEndReachedThreshold={0.2}
           onEndReached={this.loadStars}
           data={stars}
