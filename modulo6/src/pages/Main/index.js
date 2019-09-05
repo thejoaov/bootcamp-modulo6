@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { Keyboard, ActivityIndicator, ToastAndroid } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import PropTypes from 'prop-types';
 import {
   Container,
   Form,
@@ -18,11 +20,38 @@ import {
 import api from '../../services/api';
 
 export default class Main extends Component {
+  static navigationOptions = {
+    title: 'Usuários',
+  };
+
+  static propTypes = {
+    navigation: PropTypes.shape({
+      navigate: PropTypes.func,
+    }).isRequired,
+  };
+
   state = {
-    newUser: 'thejoaov',
+    newUser: '',
     users: [],
     loading: false,
   };
+
+  async componentDidMount() {
+    this.setState({ loading: true });
+    const users = await AsyncStorage.getItem('users');
+
+    if (users) {
+      this.setState({ users: JSON.parse(users) });
+    }
+    this.setState({ loading: false });
+  }
+
+  async componentDidUpdate(_, prevState) {
+    const { users } = this.state;
+    if (prevState.users !== users) {
+      await AsyncStorage.setItem('users', JSON.stringify(users));
+    }
+  }
 
   handleAddUser = async () => {
     try {
@@ -33,7 +62,7 @@ export default class Main extends Component {
       const data = {
         name: response.data.name,
         login: response.data.login,
-        bio: response.data.login,
+        bio: response.data.bio,
         avatar: response.data.avatar_url,
       };
 
@@ -48,6 +77,12 @@ export default class Main extends Component {
       ToastAndroid.show('Usuário não encontrado', ToastAndroid.SHORT);
       this.setState({ newUser: '', loading: false });
     }
+  };
+
+  handleNavigate = user => {
+    const { navigation } = this.props;
+
+    navigation.navigate('User', { user });
   };
 
   render() {
@@ -81,7 +116,7 @@ export default class Main extends Component {
               <Avatar source={{ uri: item.avatar }} />
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
-              <ProfileButton onPress={() => { }}>
+              <ProfileButton onPress={() => this.handleNavigate(item)}>
                 <ProfileButtonText>Ver Perfil</ProfileButtonText>
               </ProfileButton>
             </User>
@@ -91,7 +126,3 @@ export default class Main extends Component {
     );
   }
 }
-
-Main.navigationOptions = {
-  title: 'Usuários',
-};
