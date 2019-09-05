@@ -31,7 +31,7 @@ export default class Main extends Component {
   };
 
   state = {
-    newUser: '',
+    newUser: 'filipedeschamps',
     users: [],
     loading: false,
   };
