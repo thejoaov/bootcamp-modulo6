@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Keyboard, ActivityIndicator, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
-import AsyncStorage from 'react-native-async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Container,
   Form,
