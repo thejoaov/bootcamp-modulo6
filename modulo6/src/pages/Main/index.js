@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from 'react';
 import { Keyboard, ActivityIndicator, ToastAndroid } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
+import AsyncStorage from 'react-native-async-storage';
 import {
   Container,
   Form,
@@ -31,19 +31,17 @@ export default class Main extends Component {
   };
 
   state = {
-    newUser: '',
+    newUser: 'filipedeschamps',
     users: [],
     loading: false,
   };
 
   async componentDidMount() {
-    this.setState({ loading: true });
     const users = await AsyncStorage.getItem('users');
 
     if (users) {
       this.setState({ users: JSON.parse(users) });
     }
-    this.setState({ loading: false });
   }
 
   async componentDidUpdate(_, prevState) {
@@ -103,8 +101,8 @@ export default class Main extends Component {
             {loading ? (
               <ActivityIndicator color="#FFF" />
             ) : (
-                <Icon name="add" size={20} color="#FFF" />
-              )}
+              <Icon name="add" size={20} color="#FFF" />
+            )}
           </SubmitButton>
         </Form>
 
