@@ -32,4 +32,8 @@ target 'modulo6expo' do
 
   use_unimodules!
 
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
 end

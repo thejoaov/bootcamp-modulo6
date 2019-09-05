@@ -26,7 +26,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "entryPoint": "node_modules/expo/AppEntry.js"
+    "entryPoint": "index.js"
   },
   "displayName": "Módulo 6 com Expo",
   "name": "modulo6expo"
